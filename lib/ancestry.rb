@@ -1,4 +1,3 @@
-require_relative 'ancestry/version'
 require_relative 'ancestry/class_methods'
 require_relative 'ancestry/instance_methods'
 require_relative 'ancestry/exceptions'

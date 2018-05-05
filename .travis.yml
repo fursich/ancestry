@@ -1,23 +1,20 @@
 sudo: false
 
 rvm:
-  - 2.2.7
-  - 2.3.4
+  - 2.2.6
+  - 2.3.3
   - 2.4.1
 
 gemfile:
   - gemfiles/mysql_ar_42.gemfile
   - gemfiles/mysql2_ar_50.gemfile
   - gemfiles/mysql2_ar_51.gemfile
-  - gemfiles/mysql2_ar_52.gemfile
   - gemfiles/pg_ar_42.gemfile
   - gemfiles/pg_ar_50.gemfile
   - gemfiles/pg_ar_51.gemfile
-  - gemfiles/pg_ar_52.gemfile
   - gemfiles/sqlite3_ar_42.gemfile
   - gemfiles/sqlite3_ar_50.gemfile
   - gemfiles/sqlite3_ar_51.gemfile
-  - gemfiles/sqlite3_ar_52.gemfile
 
 matrix:
   include:
