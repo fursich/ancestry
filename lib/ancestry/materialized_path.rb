@@ -66,11 +66,12 @@ module Ancestry
       t = arel_table
       t2 = arel_table.alias('children')
       parent_path = concat_all(t[ancestry_column], path_delimitor, t[primary_key])
+      casted_primary_key = Arel::Nodes::NamedFunction.new('CAST', [ t[primary_key].as(text_type) ])
 
       t[primary_key].in(
         t.project(t[primary_key])
-        .outer_join(t2)
-        .on(parent_path.eq(t2[ancestry_column]).or(t[primary_key].eq(t2[ancestry_column])))
+        .join(t2, Arel::Nodes::OuterJoin)
+        .on(parent_path.eq(t2[ancestry_column]).or(casted_primary_key.eq(t2[ancestry_column])))
         .group(t[primary_key])
         .having(t2[primary_key].count.eq(0))
       )
@@ -99,15 +100,23 @@ module Ancestry
           Arel::Nodes::Concat.new(left, right)
         end
       else
-        if ActiveRecord::Base.connection.adapter_name.downcase == 'sqlite'
+        if %w(sqlite sqlite3).include?(ActiveRecord::Base.connection.adapter_name.downcase)
           def concat_nodes(left, right)
-            Arel::Nodes::InfixOperation.new('||',left,right)
+            Arel::Nodes::InfixOperation.new('||', left, right)
           end
         else
           def concat_nodes(left, right)
-            Arel::Nodes::NamedFunction.new('concat', left, right)
+            Arel::Nodes::NamedFunction.new('concat', [left, right])
           end
         end
+      end
+    end
+
+    def text_type
+      if %w(sqlite sqlite3 postgresql).include?(ActiveRecord::Base.connection.adapter_name.downcase)
+        Arel::Nodes::SqlLiteral.new('TEXT')
+      else
+        Arel::Nodes::SqlLiteral.new('CHAR')
       end
     end
 
